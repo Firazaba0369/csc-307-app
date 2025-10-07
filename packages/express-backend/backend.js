@@ -55,7 +55,9 @@ const addUser = (user) => {
 };
 
 const hardDeleteUser = (id) => {
+  const before = users.users_list.length;
   users.users_list = users["users_list"].filter( user => user.id !== id);
+  return users.users_list.length < before;
 };
 
 app.get("/", (req, res) => {
@@ -84,15 +86,16 @@ app.get("/users/:id", (req, res) => {
 });
 
 app.post("/users", (req, res) => {
-  const userToAdd = req.body;
+  const userToAdd = {id: Math.random(), ...req.body};
   const newUser = addUser(userToAdd);
   res.status(201).json(newUser);;
 });
 
 app.delete("/users/:id", (req, res) => {
     const id = req.params["id"];
-    hardDeleteUser(id);
-    res.send();
+    const removed = hardDeleteUser(id);
+    if (removed) return res.sendStatus(204); // success, no content
+    return res.sendStatus(404); //not found
 });
 
 app.listen(port, () => {

@@ -23,16 +23,8 @@ function MyApp() {
     return promise;
   }
 
-  function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
-  }
-
   function updateList(person) { 
-    const updatedPerson = {id: Math.random(), ...person};
-    postUser(updatedPerson)
+    postUser(person)
     .then((res) => {
       if (res.status === 201) {
         return res.json();
@@ -40,8 +32,8 @@ function MyApp() {
         throw new Error(`Unexpected status: ${res.status}`);
       }
     })
-    .then((updatedPerson) => {
-      setCharacters([...characters, updatedPerson]);
+    .then((person) => {
+      setCharacters([...characters, person]);
     })
     .catch((error) => {
       console.log(error);
@@ -54,6 +46,33 @@ function MyApp() {
 	  .then((json) => setCharacters(json["users_list"]))
 	  .catch((error) => { console.log(error); });
   }, [] );
+
+  function deleteUser(id){
+    const promise = fetch(`Http://localhost:8000/users/${id}`, {
+      method: "DELETE",
+    });
+
+    return promise;
+  }
+
+  function removeOneCharacter(index) {
+    const id = characters[index]?.id;
+    if (!id) {
+      console.warn("No id at that index");
+      return;
+    }
+    deleteUser(id)
+      .then((res) => {
+      if (res.status === 204) {
+        setCharacters((prev) => prev.filter((c) => c.id !== id));
+      } else if (res.status === 404) {
+        console.warn("User not found; nothing deleted.");
+      } else {
+        throw new Error(`Unexpected status: ${res.status}`);
+      }
+    })
+    .catch(console.log);
+  }
 
   return (
     <div className="container">

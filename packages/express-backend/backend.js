@@ -86,7 +86,8 @@ app.get("/users/:id", (req, res) => {
 });
 
 app.post("/users", (req, res) => {
-  const userToAdd = {id: Math.random(), ...req.body};
+  const genId = () => Math.random().toString(36).substring(2, 8);
+  const userToAdd = {id: genId(), ...req.body};
   const newUser = addUser(userToAdd);
   res.status(201).json(newUser);;
 });

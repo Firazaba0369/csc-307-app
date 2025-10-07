@@ -55,12 +55,7 @@ function MyApp() {
     return promise;
   }
 
-  function removeOneCharacter(index) {
-    const id = characters[index]?.id;
-    if (!id) {
-      console.warn("No id at that index");
-      return;
-    }
+  function removeOneCharacter(id) {
     deleteUser(id)
       .then((res) => {
       if (res.status === 204) {

@@ -31,11 +31,21 @@ function MyApp() {
   }
 
   function updateList(person) { 
-    postUser(person)
-      .then(() => setCharacters([...characters, person]))
-      .catch((error) => {
-        console.log(error);
-      })
+    const updatedPerson = {id: Math.random(), ...person};
+    postUser(updatedPerson)
+    .then((res) => {
+      if (res.status === 201) {
+        return res.json();
+      } else {
+        throw new Error(`Unexpected status: ${res.status}`);
+      }
+    })
+    .then((updatedPerson) => {
+      setCharacters([...characters, updatedPerson]);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   useEffect(() => {

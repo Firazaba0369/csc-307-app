@@ -43,23 +43,23 @@ function MyApp() {
   useEffect(() => {
   fetchUsers()
 	  .then((res) => res.json())
-	  .then((json) => setCharacters(json["users_list"]))
+	  .then((json) => setCharacters(Array.isArray(json) ? json : (json?.users_list ?? [])))
 	  .catch((error) => { console.log(error); });
   }, [] );
 
-  function deleteUser(id){
-    const promise = fetch(`Http://localhost:8000/users/${id}`, {
+  function deleteUser(_id){
+    const promise = fetch(`Http://localhost:8000/users/${_id}`, {
       method: "DELETE",
     });
 
     return promise;
   }
 
-  function removeOneCharacter(id) {
-    deleteUser(id)
+  function removeOneCharacter(_id) {
+    deleteUser(_id)
       .then((res) => {
       if (res.status === 204) {
-        setCharacters((prev) => prev.filter((c) => c.id !== id));
+        setCharacters((prev) => prev.filter((c) => c._id !== _id));
       } else if (res.status === 404) {
         console.warn("User not found; nothing deleted.");
       } else {

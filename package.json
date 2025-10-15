@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "dev": "npx nodemon packages/express-backend/backend.js",
-  "start": "node packages/express-backend/backend.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx nodemon packages/express-backend/backend.js",
+    "start": "node packages/express-backend/backend.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +15,8 @@
   ],
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "mongoose": "^8.19.1"
   }
 }

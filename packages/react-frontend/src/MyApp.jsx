@@ -1,20 +1,72 @@
 // src/MyApp.jsx
-import React, { useState } from "react";
+import React, {useState, useEffect} from 'react';
 import Table from "./Table";
 import Form from "./Form";
 
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
+  function fetchUsers() {
+    const promise = fetch("http://localhost:8000/users");
+    return promise;
   }
 
-  function updateList(person) {
-    setCharacters([...characters, person]);
+  function postUser(person) {
+    const promise = fetch("Http://localhost:8000/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(person),
+    });
+
+    return promise;
+  }
+
+  function updateList(person) { 
+    postUser(person)
+    .then((res) => {
+      if (res.status === 201) {
+        return res.json();
+      } else {
+        throw new Error(`Unexpected status: ${res.status}`);
+      }
+    })
+    .then((person) => {
+      setCharacters([...characters, person]);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  useEffect(() => {
+  fetchUsers()
+	  .then((res) => res.json())
+	  .then((json) => setCharacters(Array.isArray(json) ? json : (json?.users_list ?? [])))
+	  .catch((error) => { console.log(error); });
+  }, [] );
+
+  function deleteUser(_id){
+    const promise = fetch(`Http://localhost:8000/users/${_id}`, {
+      method: "DELETE",
+    });
+
+    return promise;
+  }
+
+  function removeOneCharacter(_id) {
+    deleteUser(_id)
+      .then((res) => {
+      if (res.status === 204) {
+        setCharacters((prev) => prev.filter((c) => c._id !== _id));
+      } else if (res.status === 404) {
+        console.warn("User not found; nothing deleted.");
+      } else {
+        throw new Error(`Unexpected status: ${res.status}`);
+      }
+    })
+    .catch(console.log);
   }
 
   return (
